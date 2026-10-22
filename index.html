@@ -1,18 +1,123 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>BMI Calculator Plus | Aphrodite</title><link rel="stylesheet" href="styles.css"></head>
-<body><main class="shell">
-<header><a class="brand" href="#"><span class="mark">✦</span><span><b>BMI Calculator</b><small>PLUS</small></span></a><span class="pill">● Wellness guide</span></header>
-<section class="intro"><p class="eyebrow">YOUR PERSONAL WELLNESS SNAPSHOT</p><h1>A little insight.<br><em>A healthier you.</em></h1><p>Understand your Body Mass Index and explore general wellness guidance for your next step.</p></section>
-<section class="grid">
-<form class="panel" id="form"><div class="heading"><div><p class="eyebrow">LET'S GET STARTED</p><h2>Your details</h2></div><span class="icon">＋</span></div>
-<div class="switch"><button type="button" class="unit active" data-unit="metric">Metric</button><button type="button" class="unit" data-unit="imperial">Imperial</button></div>
-<label for="age">Age <small>(optional)</small></label><div class="input"><input id="age" type="number" min="2" max="120" placeholder="24"><span>years</span></div>
-<div id="metric"><label for="height">Height</label><div class="input"><input id="height" type="number" min="50" max="260" value="170" step=".1"><span>cm</span></div><label for="weight">Weight</label><div class="input"><input id="weight" type="number" min="10" max="500" value="65" step=".1"><span>kg</span></div></div>
-<div id="imperial" hidden><label>Height</label><div class="split"><div class="input"><input id="feet" type="number" min="1" max="8" placeholder="5"><span>ft</span></div><div class="input"><input id="inches" type="number" min="0" max="11.9" step=".1" placeholder="7"><span>in</span></div></div><label for="pounds">Weight</label><div class="input"><input id="pounds" type="number" min="22" max="1100" step=".1" placeholder="143"><span>lb</span></div></div>
-<button class="primary" type="submit">Calculate my BMI <span>→</span></button><button class="text" id="reset" type="button">Reset values</button><p id="error" role="alert"></p><p class="privacy">▣ Your entries stay in this browser.</p></form>
-<section class="panel result"><div class="heading"><div><p class="eyebrow">YOUR RESULT</p><h2>Your wellness snapshot</h2></div><span class="icon green">♡</span></div><div class="score"><span class="eyebrow">YOUR BMI</span><strong id="value">22.5</strong><span id="category" class="category healthy">Healthy range</span></div>
-<div class="scale"><i></i><i></i><i></i><i></i><span id="marker"></span></div><div class="scale-labels"><span>Underweight</span><span>Healthy</span><span>Overweight</span><span>Obesity</span></div>
-<p id="description" class="description">Your BMI is within the commonly used healthy range for adults. Keep building balanced habits that work for you.</p>
-<div class="advice"><span>✧</span><div><b>Your next small step</b><p id="guidance">Aim for enjoyable movement, balanced meals, hydration, and consistent sleep.</p></div></div><p class="disclaimer">BMI is a screening measure, not a diagnosis. It does not account for every factor affecting health, including muscle mass or individual circumstances. Adult categories may not apply to children or teens.</p></section></section>
-<section class="panel history"><div class="heading"><div><p class="eyebrow">YOUR PROGRESS</p><h2>Recent calculations</h2></div><button id="clear" class="text" type="button">Clear history</button></div><div id="history-list"><p class="empty">Your calculations will appear here after you calculate your BMI.</p></div></section>
-<footer><b>✦ BMI Calculator Plus</b><span>Created for Assignment 16 · Group Aphrodite</span></footer></main><script src="script.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f6fc">
+    <title>BMI Calculator Plus | Aphrodite</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="BMI Calculator Plus home">
+          <span class="mark" aria-hidden="true">✦</span>
+          <span><b>BMI Calculator</b><small>PLUS</small></span>
+        </a>
+        <span class="pill"><span class="status-dot" aria-hidden="true"></span> Wellness guide</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">YOUR PERSONAL WELLNESS SNAPSHOT</p>
+        <h1 id="page-title">A little insight.<br><em>A healthier you.</em></h1>
+        <p>Understand your Body Mass Index and explore general wellness guidance for your next step.</p>
+      </section>
+
+      <section class="grid" aria-label="BMI calculator and result">
+        <form class="panel calculator" id="form" novalidate>
+          <div class="heading">
+            <div><p class="eyebrow">LET'S GET STARTED</p><h2>Your details</h2></div>
+            <span class="icon" aria-hidden="true">＋</span>
+          </div>
+
+          <div class="switch" role="group" aria-label="Measurement units">
+            <button type="button" class="unit active" data-unit="metric" aria-pressed="true">Metric</button>
+            <button type="button" class="unit" data-unit="imperial" aria-pressed="false">Imperial</button>
+          </div>
+
+          <label for="age">Age <small>(optional)</small></label>
+          <div class="input">
+            <input id="age" type="number" min="2" max="120" step="1" placeholder="e.g. 24" inputmode="numeric" aria-describedby="age-note">
+            <span>years</span>
+          </div>
+          <p class="field-note" id="age-note">Adult BMI categories are not intended for people under 20.</p>
+
+          <div id="metric">
+            <label for="height">Height</label>
+            <div class="input">
+              <input id="height" type="number" min="50" max="260" step="0.1" value="170" inputmode="decimal" required>
+              <span>cm</span>
+            </div>
+            <label for="weight">Weight</label>
+            <div class="input">
+              <input id="weight" type="number" min="10" max="500" step="0.1" value="65" inputmode="decimal" required>
+              <span>kg</span>
+            </div>
+          </div>
+
+          <div id="imperial" hidden>
+            <label for="feet">Height</label>
+            <div class="split">
+              <div class="input">
+                <input id="feet" type="number" min="1" max="8" step="1" placeholder="5" inputmode="numeric" aria-label="Height in feet">
+                <span>ft</span>
+              </div>
+              <div class="input">
+                <input id="inches" type="number" min="0" max="11.9" step="0.1" placeholder="7" inputmode="decimal" aria-label="Height in inches">
+                <span>in</span>
+              </div>
+            </div>
+            <label for="pounds">Weight</label>
+            <div class="input">
+              <input id="pounds" type="number" min="22" max="1100" step="0.1" placeholder="143" inputmode="decimal">
+              <span>lb</span>
+            </div>
+          </div>
+
+          <button class="primary" type="submit">Calculate my BMI <span aria-hidden="true">→</span></button>
+          <button class="text" id="reset-button" type="button">Reset values</button>
+          <p id="error" role="alert" aria-live="assertive"></p>
+          <p id="storage-status" class="storage-status" role="status" aria-live="polite"></p>
+          <p class="privacy"><span aria-hidden="true">▣</span> Your entries stay in this browser.</p>
+        </form>
+
+        <section class="panel result" id="result" aria-labelledby="result-title">
+          <div class="heading">
+            <div><p class="eyebrow">YOUR RESULT</p><h2 id="result-title" tabindex="-1">Your wellness snapshot</h2></div>
+            <span class="icon green" aria-hidden="true">♡</span>
+          </div>
+          <div class="score" aria-live="polite" aria-atomic="true">
+            <span class="eyebrow">YOUR BMI</span>
+            <strong id="value">—</strong>
+            <span id="category" class="category">Ready to calculate</span>
+          </div>
+          <div class="scale-wrap" role="img" aria-label="BMI categories: underweight below 18.5, healthy range 18.5 to 24.9, overweight 25 to 29.9, obesity 30 and above">
+            <div class="scale">
+              <i></i><i></i><i></i><i></i>
+              <span id="marker" hidden></span>
+            </div>
+            <div class="scale-labels"><span>Underweight</span><span>Healthy</span><span>Overweight</span><span>Obesity</span></div>
+            <div class="scale-values"><span>&lt; 18.5</span><span>18.5–24.9</span><span>25–29.9</span><span>30+</span></div>
+          </div>
+          <p id="description" class="description">Enter your details and calculate your BMI to see a general adult category and wellness guidance.</p>
+          <div class="advice">
+            <span aria-hidden="true">✧</span>
+            <div><b>Your next small step</b><p id="guidance">Start with small, sustainable habits that fit your life.</p></div>
+          </div>
+          <p class="disclaimer">BMI is a screening measure, not a diagnosis. It does not account for every factor affecting health, including muscle mass or individual circumstances. Adult categories may not apply to children or teens.</p>
+        </section>
+      </section>
+
+      <section class="panel history" aria-labelledby="history-title">
+        <div class="heading">
+          <div><p class="eyebrow">YOUR PROGRESS</p><h2 id="history-title">Recent calculations</h2><span id="history-count" class="history-count">0 saved</span></div>
+          <button id="clear" class="text" type="button" disabled>Clear history</button>
+        </div>
+        <div id="history-list"><p class="empty">Your calculations will appear here after you calculate your BMI.</p></div>
+      </section>
+
+      <footer><b>✦ BMI Calculator Plus</b><span>Created for Assignment 16 · Group Aphrodite</span></footer>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
