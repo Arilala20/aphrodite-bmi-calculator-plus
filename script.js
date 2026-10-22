@@ -36,6 +36,11 @@
     }
   };
 
+  /**
+   * Returns the standard adult BMI category for an already-calculated BMI.
+   * @param {number} bmi A finite BMI value.
+   * @returns {"under"|"healthy"|"over"|"obese"} Adult category key.
+   */
   function category(bmi) {
     if (bmi < 18.5) return "under";
     if (bmi < 25) return "healthy";
@@ -43,22 +48,39 @@
     return "obese";
   }
 
+  /**
+   * Loads and validates recent calculations from browser storage.
+   * Invalid or unavailable saved data is reported and treated as empty history.
+   * @returns {Array<{bmi: number|string, cat: string, age?: number|null, date: string}>} Valid recent entries.
+   */
   function readHistory() {
     try {
       const saved = JSON.parse(localStorage.getItem(historyKey) || "[]");
       if (!Array.isArray(saved)) throw new Error("Saved history is not a list.");
-      return saved.filter(item =>
-        item &&
-        Number.isFinite(Number(item.bmi)) &&
-        (info[item.cat] || item.cat === "ageSpecific") &&
-        typeof item.date === "string"
-      ).slice(0, 8);
+      return saved.filter(item => {
+        if (
+          !item ||
+          (typeof item.bmi !== "number" && typeof item.bmi !== "string") ||
+          (typeof item.bmi === "string" && item.bmi.trim() === "") ||
+          !Object.prototype.hasOwnProperty.call(info, item.cat) && item.cat !== "ageSpecific" ||
+          typeof item.date !== "string"
+        ) {
+          return false;
+        }
+
+        const bmi = Number(item.bmi);
+        return Number.isFinite(bmi) && bmi > 0;
+      }).slice(0, 8);
     } catch {
       $("#storage-status").textContent = "Saved history could not be read. You can still calculate your BMI during this visit.";
       return [];
     }
   }
 
+  /**
+   * Renders the current history state and updates its count and clear action.
+   * @returns {void}
+   */
   function renderHistory() {
     const list = $("#history-list");
     $("#history-count").textContent = `${history.length} saved`;
@@ -77,6 +99,12 @@
     }).join("");
   }
 
+  /**
+   * Updates validation messaging, invalid input attributes, and input focus.
+   * @param {string} message User-facing validation message.
+   * @param {string[]} [invalidFields=[]] IDs of fields that failed validation.
+   * @returns {void}
+   */
   function setError(message, invalidFields = []) {
     document.querySelectorAll("#form input").forEach(input => input.removeAttribute("aria-invalid"));
     invalidFields.forEach(id => $(`#${id}`).setAttribute("aria-invalid", "true"));
@@ -84,6 +112,10 @@
     if (invalidFields.length) $(`#${invalidFields[0]}`).focus();
   }
 
+  /**
+   * Persists the current history, reporting storage failures without losing the result.
+   * @returns {void}
+   */
   function saveHistory() {
     try {
       localStorage.setItem(historyKey, JSON.stringify(history));
@@ -93,6 +125,11 @@
     }
   }
 
+  /**
+   * Validates the selected units, calculates BMI, and updates the result and history.
+   * @param {SubmitEvent} [event] Form submit event, when invoked by the form.
+   * @returns {void}
+   */
   function calculate(event) {
     if (event) event.preventDefault();
     setError("");
